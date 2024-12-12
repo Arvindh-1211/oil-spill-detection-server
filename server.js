@@ -14,7 +14,7 @@ const nearbyShipsData = {};
 // Serve the AIS data CSV file
 app.get('/ais_data', (req, res) => {
     try {
-        const filePath = path.resolve("C:/SIH_Project/SIH_FINAL_AIS_SATE/merged_output_with_paths.csv");
+        const filePath = path.resolve("D:/VSCode/SIH_FINAL_AIS_SATE/merged_output_with_paths.csv");
         console.log(`Serving AIS data from: ${filePath}`);
         res.sendFile(filePath);
     } catch (error) {
@@ -48,10 +48,10 @@ app.get('/image', (req, res) => {
 });
 
 // Endpoint to store nearby ships data
-app.get('/ais_data', (req, res) => {
+app.get('/nearby_ships', (req, res) => {
     try {
-        const filePath = path.resolve("C:\SIH_Project\SIH_FINAL_AIS_SATE\nearby_ships_220634000.csv");
-        console.log(`Serving AIS data from: ${filePath}`);
+        // const filePath = path.resolve("D:\\VSCode\\OilSpill\\nearby_ships_220634000.csv");
+        const filePath = path.resolve(req.query.file_path);
         res.sendFile(filePath);
     } catch (error) {
         console.error(error);
