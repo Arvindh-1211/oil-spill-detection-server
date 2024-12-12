@@ -1,28 +1,61 @@
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
+const fs = require('fs');
 
 const app = express();
-app.use(cors())
-const PORT = 8000; // You can choose any available port
+app.use(cors());
+app.use(express.json()); // For parsing JSON in POST requests
+const PORT = 8000; // Choose any available port
 
-// Serve the CSV file
+// In-memory storage for nearby ships data
+const nearbyShipsData = {};
+
+// Serve the AIS data CSV file
 app.get('/ais_data', (req, res) => {
     try {
-        res.sendFile(path.join("D:\\VSCode\\SIH_FINAL_AIS_SATE\\merged_output_with_paths.csv"))
+        const filePath = path.resolve("C:/SIH_Project/SIH_FINAL_AIS_SATE/merged_output_with_paths.csv");
+        console.log(`Serving AIS data from: ${filePath}`);
+        res.sendFile(filePath);
     } catch (error) {
-        res.send("File not found")
-        console.log(error);
+        console.error(error);
+        res.status(404).send("File not found");
     }
 });
 
+// Serve the specific image (predicted_mask.tiff)
 app.get('/image', (req, res) => {
     try {
-        const file_path = req.query.path
-        res.sendFile(path.join(file_path, 'predicted_mask.jpg'))
+        const folderPath = req.query.path; // Get folder path from query
+        if (!folderPath) {
+            return res.status(400).send("No path specified");
+        }
+
+        // Append the file name
+        const imagePath = path.resolve(folderPath, 'predicted_mask.jpg');
+
+        // Check if the file exists
+        if (fs.existsSync(imagePath)) {
+            console.log(`Serving image from: ${imagePath}`);
+            res.sendFile(imagePath);
+        } else {
+            res.status(404).send(`File not found: ${imagePath}`);
+        }
     } catch (error) {
-        res.send(`File not found in path ${path.join(req.query.path, 'predicted_mask.jpg')}`)
-        console.log(error);
+        console.error(error);
+        res.status(500).send("Internal server error");
+    }
+});
+
+// Endpoint to store nearby ships data
+app.get('/ais_data', (req, res) => {
+    try {
+        const filePath = path.resolve("C:\SIH_Project\SIH_FINAL_AIS_SATE\nearby_ships_220634000.csv");
+        console.log(`Serving AIS data from: ${filePath}`);
+        res.sendFile(filePath);
+    } catch (error) {
+        console.error(error);
+        res.status(404).send("File not found");
     }
 });
 
